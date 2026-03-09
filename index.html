@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Mapa Longchamps</title>
+
+        <link rel="icon" type="image/png" href="icono.png">
+        <link rel="apple-touch-icon" href="icono.png">
+        <link rel="manifest" href="manifest.json">
+        <meta name="theme-color" content="#1c1c1e">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    </head>
+<body>
+
+    <button id="btn_modo_oscuro" title="Cambiar tema">🌙</button>
+
+    <div id="widget_clima">Cargando...</div>
+    <div id="tarjeta_clima">
+        <div class="tarjeta-clima-header">
+            <h3>Pronóstico 24hs</h3>
+            <button id="btn_cerrar_clima">✕</button>
+        </div>
+        <div id="pronostico_horas" class="scroll-clima"></div>
+    </div>
+
+    <div id="buscador_container">
+        <input type="text" id="buscador_input" placeholder="Buscar territorio o calle...">
+        <button id="buscador_btn">🔍</button>
+    </div>
+
+        <button id="btn_transporte" title="Ver Colectivos">🚌</button>
+        <button id="btn_quitar_recorrido" style="display: none;">❌ Volver a Territorios</button>
+
+        <div id="panel_transporte">
+            <div class="panel-header">
+                <h2>🚌 Líneas de Colectivo</h2>
+                <button id="btn_cerrar_transporte">✕</button>
+            </div>
+            <div class="contenido-transporte">
+                <button class="btn-linea" data-linea="501_1_ida"><span class="icono-bus">🚍</span> Línea 501 (Ramal Pinos 1)</button>
+                <button class="btn-linea" data-linea="501_2_ida"><span class="icono-bus">🚍</span> Línea 501 (Ramal Pinos 2)</button>
+                <button class="btn-linea" data-linea="506"><span class="icono-bus">🚍</span> Línea 506</button>
+                <button class="btn-linea" data-linea="74_79"><span class="icono-bus">🚍</span> Líneas 74 / 79</button>
+            </div>
+        </div>
+
+        <div id="tarjeta_sub_transporte">
+            <div class="tarjeta-handle"></div>
+            <div class="header-sub-menu">
+                <span class="icono-bus-titulo">🚍</span>
+                <h2 id="titulo_sub_transporte" class="titulo-tarjeta">Línea</h2>
+            </div>
+            <div id="botones_sub_transporte" class="selector-segmentado-ios">
+                </div>
+            <button id="btn_volver_transporte" class="btn-ios-volver-rojo">Volver</button>
+        </div>
+    </div>
+
+    <div id="mi_mapa"></div>
+    <div id="cartel_ruta">
+        <span id="texto_ruta"></span>
+        <button id="btn_cerrar_ruta">✕</button>
+    </div>
+
+    <div id="tarjeta_info">
+        <div class="tarjeta-handle"></div>
+        <button id="btn_cerrar_tarjeta">✕</button>
+        <div id="contenido_tarjeta"></div>
+    </div>
+
+    <button id="btn_lista_no_visitar">📋 Lista No Visitar</button>
+    <div id="panel_lista">
+        <div class="panel-header">
+            <h2>🚫 Direcciones No Visitar</h2>
+            <button id="btn_cerrar_lista">✕</button>
+        </div>
+        <div id="contenido_lista"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <script src="datos.js"></script>
+    <script src="clima.js"></script>
+    <script src="transporte.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
