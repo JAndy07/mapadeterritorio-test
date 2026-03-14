@@ -72,17 +72,33 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
 
         layer.on('click', function(e) {
             L.DomEvent.stopPropagation(e);
+            
+            // Vibración (si estás en Android)
+            if (navigator.vibrate) navigator.vibrate(20);
+
             capaPuntosNoVisitar.clearLayers();
             enfocarTerritorio(layer);
 
             const casas = direccionesNoVisitar[numeroTerritorioReal] || direccionesNoVisitar[parseInt(numeroTerritorioReal, 10)];
+            
+            // --- 1. ARMAMOS EL ENCABEZADO Y EL MENÚ DE MIS VISITAS ---
             let contenidoHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 class="titulo-tarjeta">Territorio ${numeroTerritorioReal}</h2>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                    <h2 class="titulo-tarjeta" style="margin:0;">Territorio ${numeroTerritorioReal}</h2>
                     <button id="btn_compartir_terr" style="background:none; border:none; font-size:20px; cursor:pointer;">📤</button>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="font-size: 13px; margin-bottom: 8px; color: var(--color-texto);">📍 Guardar en lista privada:</div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn-cat btn-accion" data-cat="later" style="padding: 8px 5px; font-size: 12px; flex: 1;">🕒 Tarde</button>
+                        <button class="btn-cat btn-accion" data-cat="revisit" style="padding: 8px 5px; font-size: 12px; flex: 1;">🔄 Revisita</button>
+                        <button class="btn-cat btn-accion" data-cat="study" style="padding: 8px 5px; font-size: 12px; flex: 1;">📖 Estudio</button>
+                    </div>
                 </div>
             `;
 
+            // --- 2. ARMAMOS LA LISTA DE NO VISITAR ---
             let textoParaCompartir = `Territorio ${numeroTerritorioReal} - Disponible completo ✅`;
 
             if (casas && casas.length > 0) {
@@ -103,19 +119,35 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
                 contenidoHTML += `<div class="alerta-disponible">✅ Todo el territorio disponible</div>`;
             }
 
+            // Inyectamos el HTML en la tarjeta
             document.getElementById('contenido_tarjeta').innerHTML = contenidoHTML;
-
-            // Lógica del botón de compartir
-            document.getElementById('btn_compartir_terr').addEventListener('click', () => {
-                if (navigator.vibrate) navigator.vibrate(15);
-                if (navigator.share) {
-                    navigator.share({ title: `Territorio ${numeroTerritorioReal}`, text: textoParaCompartir });
-                } else {
-                    alert("Tu navegador no soporta esta función.");
+            
+            // --- 3. ACTIVAMOS LOS BOTONES ---
+            setTimeout(() => {
+                document.getElementById('tarjeta_info').classList.add('tarjeta-visible');
+                
+                // Activar Botón Compartir
+                const btnCompartir = document.getElementById('btn_compartir_terr');
+                if (btnCompartir) {
+                    btnCompartir.onclick = () => {
+                        if (navigator.vibrate) navigator.vibrate(15);
+                        if (navigator.share) navigator.share({ title: `Territorio ${numeroTerritorioReal}`, text: textoParaCompartir });
+                    };
                 }
-            });
 
-            setTimeout(() => document.getElementById('tarjeta_info').classList.add('tarjeta-visible'), 10);
+                // Activar Botones de Guardar Visita
+                const center = layer.getBounds().getCenter();
+                const mainAddress = `Territorio ${numeroTerritorioReal} (Zona Centro)`;
+
+                document.querySelectorAll('.btn-cat').forEach(btn => {
+                    btn.onclick = function() {
+                        if (navigator.vibrate) navigator.vibrate(15);
+                        const catKey = this.getAttribute('data-cat');
+                        guardarVisitaPersonal(catKey, mainAddress, center.lat, center.lng);
+                    };
+                });
+            }, 50);
+        });
 
             document.getElementById('contenido_tarjeta').innerHTML = contenidoHTML;
             setTimeout(() => document.getElementById('tarjeta_info').classList.add('tarjeta-visible'), 10);
