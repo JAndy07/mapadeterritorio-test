@@ -927,3 +927,92 @@ body.modo-oscuro #btn_cerrar_lista {
     color: #ffffff !important;
     border: none !important;
 }
+
+/* --- 💎 ESTILO DE PANELES INFERIORES LIQUID GLASS --- */
+.panel-inferior {
+    position: fixed;
+    bottom: -100%; /* Oculto por defecto */
+    left: 10px;
+    right: 10px;
+    height: 60vh; /* Ocupa el 60% de la altura de la pantalla */
+    background: var(--bg-vidrio); /* Efecto Glassmorphic translúcido */
+    backdrop-filter: blur(var(--blur-pwa)); /* Desenfoque Liquid Glass */
+    border-radius: 20px 20px 0 0; /* Bordes redondeados iOS arriba */
+    z-index: 1000;
+    transition: bottom 0.3s ease; /* Animación de subida fluida */
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+    overflow: hidden;
+    color: var(--color-texto);
+}
+
+.panel-inferior.visible {
+    bottom: 0; /* Se hace visible */
+}
+
+/* --- Estilos internos del panel de visitas --- */
+.alerta-privacidad {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.visita-vacia {
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    padding: 20px 0;
+}
+
+.lista-direcciones li.item-visita {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.gestor-visitas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 0;
+    margin-top: auto; /* Push to the bottom */
+}
+
+.btn-accion {
+    background: rgba(255,255,255,0.1);
+    color: var(--color-texto);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    text-align: center;
+}
+
+.btn-accion:active {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* Asegura el diseño iOS de los paneles generales */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-cerrar {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--color-texto);
+    cursor: pointer;
+}
