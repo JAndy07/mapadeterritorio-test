@@ -268,3 +268,155 @@ if (btnCerrarRuta) {
         if(cartel) cartel.classList.remove('visible');
     });
 }
+
+// =========================================================
+// 👤 SECCIÓN 8. GESTIÓN PERSONAL DE VISITAS (Privada en localStorage)
+// =========================================================
+
+// Configuración de categorías y emojis
+const categoriasVisitas = {
+    later: { emoji: '🕒', nombre: 'Visitar más tarde' },
+    revisit: { emoji: '🔄', nombre: 'Revisita' },
+    study: { emoji: '📖', nombre: 'Estudio' }
+};
+
+// Referencias a los nuevos elementos HTML
+const btnPanelMisVisitas = document.getElementById('btn_mis_visitas'); // Botón PWA con Pin
+const panelMisVisitas = document.getElementById('panel_mis_visitas');
+const btnCerrarVisitas = document.getElementById('btn_cerrar_visitas');
+const listaMisVisitasHTML = document.getElementById('lista_mis_visitas');
+const btnExportarVisitas = document.getElementById('btn_exportar_visitas');
+const inputImportarVisitas = document.getElementById('input_importar_visitas');
+
+// Capa separada para los emojis personales en el mapa
+const capaPersonalVisitas = L.layerGroup().addTo(mapa);
+
+// --- 1. CARGA INICIAL Y DIBUJO ---
+let misVisitasPersonales = JSON.parse(localStorage.getItem('myPersonalVisits') || '[]');
+console.log(`Cargadas ${misVisitasPersonales.length} visitas personales privadas.`);
+
+// Función para actualizar la lista en el panel inferior
+function renderizarListaMisVisitas() {
+    listaMisVisitasHTML.innerHTML = '';
+    if (misVisitasPersonales.length === 0) {
+        listaMisVisitasHTML.innerHTML = '<li class="visita-vacia">No tienes visitas guardadas aún.</li>';
+        return;
+    }
+    
+    misVisitasPersonales.forEach(visita => {
+        const cat = categoriasVisitas[visita.category];
+        const li = document.createElement('li');
+        li.className = 'item-visita';
+        li.innerHTML = `
+            <div>
+                <span class="emoji-visita">${cat.emoji}</span>
+                <span class="dir-visita">${visita.address}</span>
+            </div>
+            <button class="btn-borrar-visita" data-id="${visita.id}">✕</button>
+        `;
+        listaMisVisitasHTML.appendChild(li);
+    });
+
+    // Agregar eventos para borrar visitas
+    document.querySelectorAll('.btn-borrar-visita').forEach(btn => {
+        btn.onclick = function() {
+            if (navigator.vibrate) navigator.vibrate(20);
+            borrarVisitaPersonal(this.getAttribute('data-id'));
+        };
+    });
+}
+
+// Función para añadir marcadores de emoji al mapa
+function dibujarMarcadoresPersonalesEnMapa() {
+    capaPersonalVisitas.clearLayers();
+    misVisitasPersonales.forEach(visita => {
+        const cat = categoriasVisitas[visita.category];
+        // Marcador de círculo con el emoji adentro
+        L.marker([visita.lat, visita.lng], {
+            icon: L.divIcon({
+                className: 'marker-personal',
+                html: `<div class="marker-personal-content">${cat.emoji}</div>`,
+                iconSize: [30, 30], iconAnchor: [15, 30]
+            })
+        })
+        .bindPopup(`<b>${cat.emoji} ${cat.nombre}</b><br>${visita.address}`)
+        .addTo(capaPersonalVisitas);
+    });
+}
+
+// Inicializar dibujo al cargar
+renderizarListaMisVisitas();
+dibujarMarcadoresPersonalesEnMapa();
+
+// --- 2. GESTIÓN DE PANELES ---
+btnPanelMisVisitas.onclick = function(e) {
+    e.preventDefault();
+    if (navigator.vibrate) navigator.vibrate(15);
+    panelMisVisitas.classList.toggle('visible');
+    if (panelMisVisitas.classList.contains('visible')) renderizarListaMisVisitas();
+};
+
+btnCerrarVisitas.onclick = () => panelMisVisitas.classList.remove('visible');
+
+// --- 3. GUARDAR UNA VISITA ---
+// Esta función se llamará desde la tarjeta del territorio
+function guardarVisitaPersonal(categoryKey, address, lat, lng) {
+    const nuevaVisita = {
+        id: Date.now(), // ID único basado en el tiempo
+        date: Date.now(),
+        lat: lat,
+        lng: lng,
+        address: address,
+        category: categoryKey
+    };
+    misVisitasPersonales.push(nuevaVisita);
+    localStorage.setItem('myPersonalVisits', JSON.stringify(misVisitasPersonales));
+    if (navigator.vibrate) navigator.vibrate(30); // ¡Vibración háptica de éxito!
+    
+    // Actualizar todo
+    renderizarListaMisVisitas();
+    dibujarMarcadoresPersonalesEnMapa();
+    alert("📍 Visita guardada en tu lista privada.");
+}
+
+function borrarVisitaPersonal(idToBorrar) {
+    misVisitasPersonales = misVisitasPersonales.filter(v => v.id.toString() !== idToBorrar);
+    localStorage.setItem('myPersonalVisits', JSON.stringify(misVisitasPersonales));
+    renderizarListaMisVisitas();
+    dibujarMarcadoresPersonalesEnMapa();
+}
+
+// --- 4. EXPORTAR / IMPORTAR ---
+btnExportarVisitas.onclick = function() {
+    if (navigator.vibrate) navigator.vibrate(15);
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(misVisitasPersonales));
+    const downNode = document.createElement('a');
+    downNode.setAttribute("href", dataStr);
+    downNode.setAttribute("download", "Mis_Visitas_Longchamps.json");
+    document.body.appendChild(downNode); // Required for firefox
+    downNode.click();
+    downNode.remove();
+};
+
+inputImportarVisitas.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const visitasImportadas = JSON.parse(e.target.result);
+            if (!Array.isArray(visitasImportadas)) throw new Error("Formato inválido");
+            
+            // Reemplazar la lista actual por la importada
+            misVisitasPersonales = visitasImportadas;
+            localStorage.setItem('myPersonalVisits', JSON.stringify(misVisitasPersonales));
+            
+            renderizarListaMisVisitas();
+            dibujarMarcadoresPersonalesEnMapa();
+            alert(`✅ Importación exitosa. ${misVisitasPersonales.length} visitas añadidas.`);
+        } catch (err) {
+            alert("❌ Error: El archivo no es válido.");
+        }
+    };
+    reader.readAsText(file);
+};
