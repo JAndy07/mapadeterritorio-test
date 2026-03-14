@@ -65,6 +65,28 @@
         <button id="btn_cerrar_ruta">✕</button>
     </div>
 
+<div id="panel_mis_visitas" class="panel-inferior panel-vidrio">
+        <div class="panel-header">
+            <h2 class="titulo-panel">👤 Mis Visitas Personales</h2>
+            <button id="btn_cerrar_visitas" class="btn-cerrar">✕</button>
+        </div>
+        <div class="panel-content">
+            <div class="alerta-privacidad">⚠️ Esta lista es privada y vive solo en tu celular.</div>
+            
+            <ul id="lista_mis_visitas" class="lista-direcciones">
+                <li class="visita-vacia">No tienes visitas guardadas aún.</li>
+            </ul>
+
+            <div class="gestor-visitas">
+                <button id="btn_exportar_visitas" class="btn-accion">📥 Exportar Lista (Respaldo)</button>
+                <div class="subir-archivo">
+                    <label for="input_importar_visitas" class="btn-accion">📤 Importar Lista</label>
+                    <input type="file" id="input_importar_visitas" accept=".json" style="display:none">
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div id="tarjeta_info">
         <div class="tarjeta-handle"></div>
         <button id="btn_cerrar_tarjeta">✕</button>
