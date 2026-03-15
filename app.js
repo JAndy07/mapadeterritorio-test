@@ -13,10 +13,7 @@ if (btnLuna) {
         const estaOscuro = document.body.classList.contains('modo-oscuro');
         localStorage.setItem('temaOscuro', estaOscuro);
         btnLuna.innerHTML = estaOscuro ? "☀️" : "🌙";
-        // Cambia el color de la barra del celular
-            const colorBarra = estaOscuro ? '#1c1c1e' : '#007AFF';
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', colorBarra);
-        };
+    };
 }
 
 // --- 2. CONFIGURACIÓN DEL MAPA ---
@@ -73,7 +70,6 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
         layer.on('click', function(e) {
             L.DomEvent.stopPropagation(e);
             
-            // Vibración (si estás en Android)
             if (navigator.vibrate) navigator.vibrate(20);
 
             capaPuntosNoVisitar.clearLayers();
@@ -81,16 +77,16 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
 
             const casas = direccionesNoVisitar[numeroTerritorioReal] || direccionesNoVisitar[parseInt(numeroTerritorioReal, 10)];
             
-            // --- 1. ARMAMOS EL ENCABEZADO Y EL MENÚ DE MIS VISITAS ---
+            // Armamos el encabezado y el menú de Mis Visitas
             let contenidoHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                     <h2 class="titulo-tarjeta" style="margin:0;">Territorio ${numeroTerritorioReal}</h2>
                     <button id="btn_compartir_terr" style="background:none; border:none; font-size:20px; cursor:pointer;">📤</button>
                 </div>
                 
-                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                <div class="alerta-guardar-personal" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
                     <div style="font-size: 13px; margin-bottom: 8px; color: var(--color-texto);">📍 Guardar en lista privada:</div>
-                    <div style="display: flex; gap: 5px;">
+                    <div class="selector-categorias" style="display: flex; gap: 5px;">
                         <button class="btn-cat btn-accion" data-cat="later" style="padding: 8px 5px; font-size: 12px; flex: 1;">🕒 Tarde</button>
                         <button class="btn-cat btn-accion" data-cat="revisit" style="padding: 8px 5px; font-size: 12px; flex: 1;">🔄 Revisita</button>
                         <button class="btn-cat btn-accion" data-cat="study" style="padding: 8px 5px; font-size: 12px; flex: 1;">📖 Estudio</button>
@@ -98,7 +94,6 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
                 </div>
             `;
 
-            // --- 2. ARMAMOS LA LISTA DE NO VISITAR ---
             let textoParaCompartir = `Territorio ${numeroTerritorioReal} - Disponible completo ✅`;
 
             if (casas && casas.length > 0) {
@@ -119,14 +114,11 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
                 contenidoHTML += `<div class="alerta-disponible">✅ Todo el territorio disponible</div>`;
             }
 
-            // Inyectamos el HTML en la tarjeta
             document.getElementById('contenido_tarjeta').innerHTML = contenidoHTML;
             
-            // --- 3. ACTIVAMOS LOS BOTONES ---
             setTimeout(() => {
                 document.getElementById('tarjeta_info').classList.add('tarjeta-visible');
                 
-                // Activar Botón Compartir
                 const btnCompartir = document.getElementById('btn_compartir_terr');
                 if (btnCompartir) {
                     btnCompartir.onclick = () => {
@@ -135,7 +127,6 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
                     };
                 }
 
-                // Activar Botones de Guardar Visita
                 const center = layer.getBounds().getCenter();
                 const mainAddress = `Territorio ${numeroTerritorioReal} (Zona Centro)`;
 
@@ -147,10 +138,6 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
                     };
                 });
             }, 50);
-        });
-
-            document.getElementById('contenido_tarjeta').innerHTML = contenidoHTML;
-            setTimeout(() => document.getElementById('tarjeta_info').classList.add('tarjeta-visible'), 10);
         });
     }
 }).addTo(window.mapa);
@@ -304,31 +291,25 @@ if (btnCerrarRuta) {
 // =========================================================
 // 👤 SECCIÓN 8. GESTIÓN PERSONAL DE VISITAS (Privada en localStorage)
 // =========================================================
-
-// Configuración de categorías y emojis
 const categoriasVisitas = {
     later: { emoji: '🕒', nombre: 'Visitar más tarde' },
     revisit: { emoji: '🔄', nombre: 'Revisita' },
     study: { emoji: '📖', nombre: 'Estudio' }
 };
 
-// Referencias a los nuevos elementos HTML
-const btnPanelMisVisitas = document.getElementById('btn_mis_visitas'); // Botón PWA con Pin
+const btnPanelMisVisitas = document.getElementById('btn_mis_visitas');
 const panelMisVisitas = document.getElementById('panel_mis_visitas');
 const btnCerrarVisitas = document.getElementById('btn_cerrar_visitas');
 const listaMisVisitasHTML = document.getElementById('lista_mis_visitas');
 const btnExportarVisitas = document.getElementById('btn_exportar_visitas');
 const inputImportarVisitas = document.getElementById('input_importar_visitas');
 
-// Capa separada para los emojis personales en el mapa
-const capaPersonalVisitas = L.layerGroup().addTo(mapa);
+const capaPersonalVisitas = L.layerGroup().addTo(window.mapa);
 
-// --- 1. CARGA INICIAL Y DIBUJO ---
 let misVisitasPersonales = JSON.parse(localStorage.getItem('myPersonalVisits') || '[]');
-console.log(`Cargadas ${misVisitasPersonales.length} visitas personales privadas.`);
 
-// Función para actualizar la lista en el panel inferior
 function renderizarListaMisVisitas() {
+    if (!listaMisVisitasHTML) return;
     listaMisVisitasHTML.innerHTML = '';
     if (misVisitasPersonales.length === 0) {
         listaMisVisitasHTML.innerHTML = '<li class="visita-vacia">No tienes visitas guardadas aún.</li>';
@@ -349,7 +330,6 @@ function renderizarListaMisVisitas() {
         listaMisVisitasHTML.appendChild(li);
     });
 
-    // Agregar eventos para borrar visitas
     document.querySelectorAll('.btn-borrar-visita').forEach(btn => {
         btn.onclick = function() {
             if (navigator.vibrate) navigator.vibrate(20);
@@ -358,12 +338,10 @@ function renderizarListaMisVisitas() {
     });
 }
 
-// Función para añadir marcadores de emoji al mapa
 function dibujarMarcadoresPersonalesEnMapa() {
     capaPersonalVisitas.clearLayers();
     misVisitasPersonales.forEach(visita => {
         const cat = categoriasVisitas[visita.category];
-        // Marcador de círculo con el emoji adentro
         L.marker([visita.lat, visita.lng], {
             icon: L.divIcon({
                 className: 'marker-personal',
@@ -376,25 +354,25 @@ function dibujarMarcadoresPersonalesEnMapa() {
     });
 }
 
-// Inicializar dibujo al cargar
 renderizarListaMisVisitas();
 dibujarMarcadoresPersonalesEnMapa();
 
-// --- 2. GESTIÓN DE PANELES ---
-btnPanelMisVisitas.onclick = function(e) {
-    e.preventDefault();
-    if (navigator.vibrate) navigator.vibrate(15);
-    panelMisVisitas.classList.toggle('visible');
-    if (panelMisVisitas.classList.contains('visible')) renderizarListaMisVisitas();
-};
+if (btnPanelMisVisitas && panelMisVisitas) {
+    btnPanelMisVisitas.onclick = function(e) {
+        e.preventDefault();
+        if (navigator.vibrate) navigator.vibrate(15);
+        panelMisVisitas.classList.toggle('visible');
+        if (panelMisVisitas.classList.contains('visible')) renderizarListaMisVisitas();
+    };
+}
 
-btnCerrarVisitas.onclick = () => panelMisVisitas.classList.remove('visible');
+if (btnCerrarVisitas && panelMisVisitas) {
+    btnCerrarVisitas.onclick = () => panelMisVisitas.classList.remove('visible');
+}
 
-// --- 3. GUARDAR UNA VISITA ---
-// Esta función se llamará desde la tarjeta del territorio
-function guardarVisitaPersonal(categoryKey, address, lat, lng) {
+window.guardarVisitaPersonal = function(categoryKey, address, lat, lng) {
     const nuevaVisita = {
-        id: Date.now(), // ID único basado en el tiempo
+        id: Date.now(),
         date: Date.now(),
         lat: lat,
         lng: lng,
@@ -403,52 +381,51 @@ function guardarVisitaPersonal(categoryKey, address, lat, lng) {
     };
     misVisitasPersonales.push(nuevaVisita);
     localStorage.setItem('myPersonalVisits', JSON.stringify(misVisitasPersonales));
-    if (navigator.vibrate) navigator.vibrate(30); // ¡Vibración háptica de éxito!
+    if (navigator.vibrate) navigator.vibrate(30); 
     
-    // Actualizar todo
     renderizarListaMisVisitas();
     dibujarMarcadoresPersonalesEnMapa();
     alert("📍 Visita guardada en tu lista privada.");
 }
 
-function borrarVisitaPersonal(idToBorrar) {
+window.borrarVisitaPersonal = function(idToBorrar) {
     misVisitasPersonales = misVisitasPersonales.filter(v => v.id.toString() !== idToBorrar);
     localStorage.setItem('myPersonalVisits', JSON.stringify(misVisitasPersonales));
     renderizarListaMisVisitas();
     dibujarMarcadoresPersonalesEnMapa();
 }
 
-// --- 4. EXPORTAR / IMPORTAR ---
-btnExportarVisitas.onclick = function() {
-    if (navigator.vibrate) navigator.vibrate(15);
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(misVisitasPersonales));
-    const downNode = document.createElement('a');
-    downNode.setAttribute("href", dataStr);
-    downNode.setAttribute("download", "Mis_Visitas_Longchamps.json");
-    document.body.appendChild(downNode); // Required for firefox
-    downNode.click();
-    downNode.remove();
-};
-
-inputImportarVisitas.onchange = function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const visitasImportadas = JSON.parse(e.target.result);
-            if (!Array.isArray(visitasImportadas)) throw new Error("Formato inválido");
-            
-            // Reemplazar la lista actual por la importada
-            misVisitasPersonales = visitasImportadas;
-            localStorage.setItem('myPersonalVisits', JSON.stringify(misVisitasPersonales));
-            
-            renderizarListaMisVisitas();
-            dibujarMarcadoresPersonalesEnMapa();
-            alert(`✅ Importación exitosa. ${misVisitasPersonales.length} visitas añadidas.`);
-        } catch (err) {
-            alert("❌ Error: El archivo no es válido.");
-        }
+if (btnExportarVisitas) {
+    btnExportarVisitas.onclick = function() {
+        if (navigator.vibrate) navigator.vibrate(15);
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(misVisitasPersonales));
+        const downNode = document.createElement('a');
+        downNode.setAttribute("href", dataStr);
+        downNode.setAttribute("download", "Mis_Visitas_Longchamps.json");
+        document.body.appendChild(downNode);
+        downNode.click();
+        downNode.remove();
     };
-    reader.readAsText(file);
-};
+}
+
+if (inputImportarVisitas) {
+    inputImportarVisitas.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const visitasImportadas = JSON.parse(e.target.result);
+                if (!Array.isArray(visitasImportadas)) throw new Error("Formato inválido");
+                misVisitasPersonales = visitasImportadas;
+                localStorage.setItem('myPersonalVisits', JSON.stringify(misVisitasPersonales));
+                renderizarListaMisVisitas();
+                dibujarMarcadoresPersonalesEnMapa();
+                alert(`✅ Importación exitosa. ${misVisitasPersonales.length} visitas añadidas.`);
+            } catch (err) {
+                alert("❌ Error: El archivo no es válido.");
+            }
+        };
+        reader.readAsText(file);
+    };
+}
