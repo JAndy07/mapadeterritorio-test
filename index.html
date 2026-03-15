@@ -31,8 +31,7 @@
         <button id="buscador_btn">🔍</button>
     </div>
 
-        <button id="btn_transporte" title="Ver Colectivos">🚌</button>
-        <button id="btn_quitar_recorrido" style="display: none;">❌ Volver a Territorios</button>
+    <button id="btn_quitar_recorrido" style="display: none;">❌ Volver a Territorios</button>
 
         <div id="panel_transporte">
             <div class="panel-header">
@@ -93,11 +92,7 @@
         <div id="contenido_tarjeta"></div>
     </div>
 
-    <button id="btn_mis_visitas">
-    📍 Mis visitas
-</button>
-
-    <button id="btn_lista_no_visitar">📋 Lista No Visitar</button>
+    
     <div id="panel_lista">
         <div class="panel-header">
             <h2>🚫 Direcciones No Visitar</h2>
@@ -106,6 +101,21 @@
         <div id="contenido_lista"></div>
     </div>
 
+<nav id="bottom_nav_bar">
+        <button class="nav-item" id="btn_transporte">
+            <span class="nav-icon">🚌</span>
+            <span class="nav-label">Transporte</span>
+        </button>
+        <button class="nav-item" id="btn_lista_no_visitar">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">No Visitar</span>
+        </button>
+        <button class="nav-item" id="btn_mis_visitas">
+            <span class="nav-icon">📍</span>
+            <span class="nav-label">Mis Visitas</span>
+        </button>
+    </nav>
+    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
