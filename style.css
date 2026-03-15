@@ -928,135 +928,164 @@ body.modo-oscuro #btn_cerrar_lista {
     border: none !important;
 }
 
-/* --- 💎 ESTILO DE PANELES INFERIORES LIQUID GLASS --- */
+/* ================================================= */
+/* 💎 ESTILOS DEL PANEL MIS VISITAS Y BOTÓN FLOTANTE */
+/* ================================================= */
+
+/* --- 1. BOTÓN FLOTANTE MIS VISITAS --- */
+#btn_mis_visitas {
+    position: fixed;
+    bottom: 20px;
+    left: 215px; /* Lo empujamos bien a la derecha para que no choque */
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none; /* Le sacamos el borde negro */
+    padding: 12px 18px;
+    border-radius: 30px; /* Bien redondito estilo iOS */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+body.modo-oscuro #btn_mis_visitas {
+    background: rgba(30, 30, 30, 0.9);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- 2. PANEL INFERIOR (Arreglado el fondo transparente) --- */
 .panel-inferior {
     position: fixed;
-    bottom: -100%; /* Oculto por defecto */
+    bottom: -100%;
     left: 10px;
     right: 10px;
-    height: 60vh; /* Ocupa el 60% de la altura de la pantalla */
-    background: var(--bg-vidrio); /* Efecto Glassmorphic translúcido */
-    backdrop-filter: blur(var(--blur-pwa)); /* Desenfoque Liquid Glass */
-    border-radius: 20px 20px 0 0; /* Bordes redondeados iOS arriba */
-    z-index: 1000;
-    transition: bottom 0.3s ease; /* Animación de subida fluida */
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
-    overflow: hidden;
-    color: var(--color-texto);
+    height: 55vh;
+    /* Usamos colores directos en vez de variables para asegurar que funcione */
+    background: rgba(255, 255, 255, 0.95); 
+    backdrop-filter: blur(15px);
+    border-radius: 20px 20px 0 0;
+    z-index: 2000; /* Por encima del mapa y botones */
+    transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+body.modo-oscuro .panel-inferior {
+    background: rgba(28, 28, 30, 0.95);
+    color: white;
 }
 
 .panel-inferior.visible {
-    bottom: 0; /* Se hace visible */
+    bottom: 0;
 }
 
-/* --- Estilos internos del panel de visitas --- */
-.alerta-privacidad {
-    background: rgba(255, 193, 7, 0.2);
-    color: #ffc107;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 13px;
-    margin-bottom: 15px;
-    border: 1px solid rgba(255, 193, 7, 0.4);
-}
-
-.visita-vacia {
-    text-align: center;
-    color: rgba(255,255,255,0.6);
-    padding: 20px 0;
-}
-
-.lista-direcciones li.item-visita {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-}
-
-.gestor-visitas {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 15px 0;
-    margin-top: auto; /* Push to the bottom */
-}
-
-.btn-accion {
-    background: rgba(255,255,255,0.1);
-    color: var(--color-texto);
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 14px;
-    width: 100%;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    text-align: center;
-}
-
-.btn-accion:active {
-    background: rgba(255,255,255,0.2);
-    border-color: rgba(255,255,255,0.3);
-}
-
-/* Asegura el diseño iOS de los paneles generales */
 .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+body.modo-oscuro .panel-header {
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.btn-cerrar {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: var(--color-texto);
-    cursor: pointer;
+.titulo-panel {
+    margin: 0;
+    font-size: 18px;
 }
 
-/* --- Estilo para los marcadores de emoji personales en Leaflet --- */
-.marker-personal-content {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(0,0,0,0.2);
+.panel-content {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- 3. ELEMENTOS INTERNOS DEL PANEL --- */
+.alerta-privacidad {
+    background: rgba(255, 193, 7, 0.15);
+    color: #d39e00;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+body.modo-oscuro .alerta-privacidad {
+    color: #ffc107;
+}
+
+.lista-direcciones.mis-visitas-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item-visita {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+body.modo-oscuro .item-visita {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.btn-borrar-visita {
+    background: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+    border: none;
     border-radius: 50%;
     width: 30px;
     height: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-}
-
-/* --- BOTÓN FLOTANTE "MIS VISITAS" --- */
-#btn_mis_visitas {
-    position: absolute;
-    bottom: 20px;
-    left: 210px; /* Lo empujamos hacia la derecha para que no pise al otro botón */
-    z-index: 1000; /* Esto lo trae por encima del mapa */
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 10px 16px;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
+    font-weight: bold;
     cursor: pointer;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 6px;
 }
 
-/* Para que cambie de color si tocás la lunita (Modo Oscuro) */
-body.modo-oscuro #btn_mis_visitas {
-    background: rgba(30, 30, 30, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #fff;
+.gestor-visitas {
+    margin-top: auto; /* Empuja los botones al fondo */
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-accion {
+    background: #007AFF;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-accion.secundario {
+    background: rgba(0, 122, 255, 0.1);
+    color: #007AFF;
+}
+
+body.modo-oscuro .btn-accion.secundario {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
 }
