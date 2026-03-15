@@ -1158,3 +1158,79 @@ body.modo-oscuro .nav-item:active {
 .panel-inferior.visible, #panel_lista.panel-visible, #panel_transporte.panel-visible {
     bottom: 65px !important; 
 }
+
+/* ================================================= */
+/* 🚀 RESCATE: BARRA INFERIOR ESTILO GOOGLE MAPS     */
+/* ================================================= */
+
+/* 1. Obligamos a la barra a quedarse abajo y ser blanca */
+#bottom_nav_bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 70px !important;
+    background: #ffffff !important;
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    z-index: 9999 !important; /* Arriba de absolutamente todo */
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.1) !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+    margin: 0 !important;
+}
+
+/* 2. Le sacamos todo el estilo viejo a los 3 botones para que no vuelen */
+#btn_transporte, #btn_lista_no_visitar, #btn_mis_visitas {
+    position: static !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 33% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #5f6368 !important;
+}
+
+/* 3. Acomodamos el icono y el texto adentro de cada botón */
+#btn_transporte span, #btn_lista_no_visitar span, #btn_mis_visitas span {
+    display: block !important;
+}
+
+.nav-icon {
+    font-size: 24px !important;
+    margin-bottom: 3px !important;
+}
+
+.nav-label {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+}
+
+/* 4. Arreglamos los paneles para que no tapen el mapa cuando están cerrados */
+.panel-inferior, #panel_lista, #panel_transporte {
+    position: fixed !important;
+    bottom: -150% !important; /* Bien escondidos abajo por defecto */
+    z-index: 4000 !important;
+    transition: bottom 0.3s ease !important;
+}
+
+/* 5. Cuando se abren los paneles, se apoyan justo arriba de la barra (70px) */
+.panel-inferior.visible, #panel_lista.panel-visible, #panel_transporte.panel-visible {
+    bottom: 70px !important; 
+}
+
+/* 6. Modo Oscuro para la barra */
+body.modo-oscuro #bottom_nav_bar {
+    background: #1c1c1e !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+}
+body.modo-oscuro #btn_transporte, body.modo-oscuro #btn_lista_no_visitar, body.modo-oscuro #btn_mis_visitas {
+    color: #9aa0a6 !important;
+}
