@@ -1031,3 +1031,32 @@ body.modo-oscuro #btn_cerrar_lista {
     font-size: 18px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
+
+/* --- BOTÓN FLOTANTE "MIS VISITAS" --- */
+#btn_mis_visitas {
+    position: absolute;
+    bottom: 20px;
+    left: 210px; /* Lo empujamos hacia la derecha para que no pise al otro botón */
+    z-index: 1000; /* Esto lo trae por encima del mapa */
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 10px 16px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Para que cambie de color si tocás la lunita (Modo Oscuro) */
+body.modo-oscuro #btn_mis_visitas {
+    background: rgba(30, 30, 30, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
