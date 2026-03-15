@@ -130,11 +130,23 @@ window.capaTerritorios = L.geoJSON(datosTerritorios, {
                 const center = layer.getBounds().getCenter();
                 const mainAddress = `Territorio ${numeroTerritorioReal} (Zona Centro)`;
 
-                document.querySelectorAll('.btn-cat').forEach(btn => {
+               document.querySelectorAll('.btn-cat').forEach(btn => {
                     btn.onclick = function() {
                         if (navigator.vibrate) navigator.vibrate(15);
                         const catKey = this.getAttribute('data-cat');
-                        guardarVisitaPersonal(catKey, mainAddress, center.lat, center.lng);
+                        
+                        // 1. Pedir la dirección o nota al usuario
+                        let direccionExacta = prompt("📝 Ingresá la dirección exacta o nota para esta visita:", mainAddress);
+                        
+                        // Si el usuario presiona "Cancelar", no se guarda nada
+                        if (direccionExacta === null || direccionExacta.trim() === "") return;
+
+                        // 2. Crear un pequeño desplazamiento aleatorio (Offset) para que los emojis no se encimen
+                        // Multiplicamos por 0.0006 para que se muevan unos ~40 metros alrededor del centro
+                        const latOffset = (Math.random() - 0.5) * 0.0006;
+                        const lngOffset = (Math.random() - 0.5) * 0.0006;
+
+                        guardarVisitaPersonal(catKey, direccionExacta, center.lat + latOffset, center.lng + lngOffset);
                     };
                 });
             }, 50);
